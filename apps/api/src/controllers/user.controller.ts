@@ -51,7 +51,7 @@ export class UserController {
       };
     } catch (error) {
       if (error.code === 'P2025') {
-        throw new BadRequestException('Autenticação feita com sucesso');
+        throw new BadRequestException('Não foi possível se autenticar');
       } else {
         throw new InternalServerErrorException(
           'Algum erro inesperado aconteceu, tente novamente mais tarde',

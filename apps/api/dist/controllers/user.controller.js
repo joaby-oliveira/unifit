@@ -48,7 +48,7 @@ let UserController = class UserController {
         }
         catch (error) {
             if (error.code === 'P2025') {
-                throw new common_1.BadRequestException('Autenticação feita com sucesso');
+                throw new common_1.BadRequestException('Não foi possível se autenticar');
             }
             else {
                 throw new common_1.InternalServerErrorException('Algum erro inesperado aconteceu, tente novamente mais tarde');
