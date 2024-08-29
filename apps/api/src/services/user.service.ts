@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { readFileSync, rmSync, writeFileSync } from 'fs';
 import { S3ManagerService } from './s3-manager.service';
+import { UserInterface } from 'src/interfaces/user.interface';
 
 @Injectable()
 export class UserService {
@@ -12,6 +13,12 @@ export class UserService {
     private jwtService: JwtService,
     private s3ManagerService: S3ManagerService,
   ) {}
+
+  public async createUser(user: UserInterface) {
+    return await this.prismaService.user.create({
+      data: { ...user, accessLevel: 'member', status: 'waiting' },
+    });
+  }
 
   public async auth(loginData: { email: string; password: string }) {
     const user = await this.prismaService.user.findFirstOrThrow({
