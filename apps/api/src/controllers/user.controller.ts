@@ -31,7 +31,7 @@ export class UserController {
       };
     } catch (error) {
       if (error.code === 'P2002') {
-        throw new BadRequestException('E-mail indisponível');
+        throw new BadRequestException('Não foi possível criar conta');
       }
       throw new InternalServerErrorException(
         'Algum erro inesperado aconteceu, tente novamente mais tarde',
