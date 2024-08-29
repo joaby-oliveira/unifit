@@ -30,7 +30,9 @@ export class UserController {
         data: createdUser,
       };
     } catch (error) {
-      console.log(error);
+      if (error.code === 'P2002') {
+        throw new BadRequestException('E-mail indisponível');
+      }
       throw new InternalServerErrorException(
         'Algum erro inesperado aconteceu, tente novamente mais tarde',
       );
