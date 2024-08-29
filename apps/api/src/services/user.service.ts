@@ -15,8 +15,16 @@ export class UserService {
   ) {}
 
   public async createUser(user: UserInterface) {
+    const saltOrRounds = 10;
+    const hashedPassword = await bcrypt.hash(userData.password, saltOrRounds);
+
     return await this.prismaService.user.create({
-      data: { ...user, accessLevel: 'member', status: 'waiting' },
+      data: {
+        ...user,
+        accessLevel: 'member',
+        status: 'waiting',
+        password: hashedPassword,
+      },
     });
   }
 
