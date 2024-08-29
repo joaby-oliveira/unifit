@@ -24,7 +24,7 @@ let UserService = class UserService {
     }
     async createUser(user) {
         const saltOrRounds = 10;
-        const hashedPassword = await bcrypt.hash(userData.password, saltOrRounds);
+        const hashedPassword = await bcrypt.hash(user.password, saltOrRounds);
         return await this.prismaService.user.create({
             data: {
                 ...user,
