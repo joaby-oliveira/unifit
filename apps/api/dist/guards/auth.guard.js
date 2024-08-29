@@ -13,6 +13,7 @@ exports.AuthGuard = void 0;
 const common_1 = require("@nestjs/common");
 const core_1 = require("@nestjs/core");
 const jwt_1 = require("@nestjs/jwt");
+const isAdm_1 = require("../constants/isAdm");
 const isPublic_1 = require("../constants/isPublic");
 let AuthGuard = class AuthGuard {
     constructor(jwtService, reflector) {
@@ -36,6 +37,13 @@ let AuthGuard = class AuthGuard {
             const payload = await this.jwtService.verifyAsync(token, {
                 secret: process.env['JWT_SECRET'],
             });
+            const isAdm = this.reflector.getAllAndOverride(isAdm_1.IS_ADM, [
+                context.getHandler(),
+                context.getClass(),
+            ]);
+            if (!isAdm) {
+                throw new common_1.UnauthorizedException();
+            }
             request['user'] = payload;
         }
         catch {

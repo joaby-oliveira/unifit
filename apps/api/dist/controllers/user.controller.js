@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
+const isAdm_1 = require("../constants/isAdm");
 const isPublic_1 = require("../constants/isPublic");
 const auth_dto_1 = require("../dto/auth.dto");
 const createUser_dto_1 = require("../dto/createUser.dto");
@@ -57,7 +58,19 @@ let UserController = class UserController {
     }
     async submitProfilePicture(file, request) {
         try {
-            return this.userService.uploadProfilePicture(file, request['user'].sub ?? 0);
+            return await this.userService.uploadProfilePicture(file, request['user'].sub ?? 0);
+        }
+        catch (error) {
+            console.log(error);
+            throw new common_1.InternalServerErrorException('Algum erro inesperado aconteceu, tente novamente mais tarde');
+        }
+    }
+    async listUsers() {
+        try {
+            return await this.userService.listUsers({
+                fieldsToReturn: ['name'],
+                filterBy: [{ field: 'name', rule: 'asdkasj' }],
+            });
         }
         catch (error) {
             console.log(error);
@@ -91,6 +104,13 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "submitProfilePicture", null);
+__decorate([
+    (0, common_1.Get)(),
+    (0, isAdm_1.IsAdm)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "listUsers", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)('user'),
     __metadata("design:paramtypes", [user_service_1.UserService])

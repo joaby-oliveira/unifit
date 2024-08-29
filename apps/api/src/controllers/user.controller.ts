@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   InternalServerErrorException,
   Post,
   Req,
@@ -10,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
+import { IsAdm } from 'src/constants/isAdm';
 import { Public } from 'src/constants/isPublic';
 import { AuthDTO } from 'src/dto/auth.dto';
 import { CreateUserDto } from 'src/dto/createUser.dto';
@@ -67,10 +69,26 @@ export class UserController {
     @Req() request: Request,
   ) {
     try {
-      return this.userService.uploadProfilePicture(
+      return await this.userService.uploadProfilePicture(
         file,
         request['user'].sub ?? 0,
       );
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(
+        'Algum erro inesperado aconteceu, tente novamente mais tarde',
+      );
+    }
+  }
+
+  @Get()
+  @IsAdm()
+  async listUsers() {
+    try {
+      return await this.userService.listUsers({
+        fieldsToReturn: ['name'],
+        filterBy: [{ field: 'name', rule: 'asdkasj' }],
+      });
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException(

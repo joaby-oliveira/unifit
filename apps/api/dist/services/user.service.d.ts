@@ -1,7 +1,7 @@
 import { PrismaService } from './prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { S3ManagerService } from './s3-manager.service';
-import { UserInterface } from 'src/interfaces/user.interface';
+import { ListUsersFilterInterface, UserInterface } from 'src/interfaces/user.interface';
 export declare class UserService {
     private prismaService;
     private jwtService;
@@ -27,5 +27,9 @@ export declare class UserService {
     }>;
     uploadProfilePicture(file: any, userId: number): Promise<{
         message: string;
+    }>;
+    listUsers(filter: ListUsersFilterInterface): Promise<{
+        message: string;
+        data: {}[];
     }>;
 }

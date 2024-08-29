@@ -4,7 +4,10 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { readFileSync, rmSync, writeFileSync } from 'fs';
 import { S3ManagerService } from './s3-manager.service';
-import { UserInterface } from 'src/interfaces/user.interface';
+import {
+  ListUsersFilterInterface,
+  UserInterface,
+} from 'src/interfaces/user.interface';
 
 @Injectable()
 export class UserService {
@@ -88,6 +91,23 @@ export class UserService {
 
     return {
       message: 'Foto de perfil atualizada com sucesso',
+    };
+  }
+
+  public async listUsers(filter: ListUsersFilterInterface) {
+    const fieldsToBring = {};
+
+    filter.fieldsToReturn.forEach((field) => {
+      fieldsToBring[field] = true;
+    });
+
+    console.log(fieldsToBring);
+    return {
+      message: 'Usuários listados com sucesso',
+      data: await this.prismaService.user.findMany({
+        select: { ...fieldsToBring },
+        where: { createdAt: { gt: new Date() } },
+      }),
     };
   }
 }

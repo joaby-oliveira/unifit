@@ -29,4 +29,8 @@ export declare class UserController {
     submitProfilePicture(file: Express.Multer.File, request: Request): Promise<{
         message: string;
     }>;
+    listUsers(): Promise<{
+        message: string;
+        data: {}[];
+    }>;
 }

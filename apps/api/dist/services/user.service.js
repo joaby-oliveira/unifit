@@ -79,6 +79,20 @@ let UserService = class UserService {
             message: 'Foto de perfil atualizada com sucesso',
         };
     }
+    async listUsers(filter) {
+        const fieldsToBring = {};
+        filter.fieldsToReturn.forEach((field) => {
+            fieldsToBring[field] = true;
+        });
+        console.log(fieldsToBring);
+        return {
+            message: 'Usuários listados com sucesso',
+            data: await this.prismaService.user.findMany({
+                select: { ...fieldsToBring },
+                where: { createdAt: { gt: new Date() } },
+            }),
+        };
+    }
 };
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([
