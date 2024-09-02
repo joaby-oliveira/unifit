@@ -4,6 +4,10 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { readFileSync, rmSync, writeFileSync } from 'fs';
 import { S3ManagerService } from './s3-manager.service';
+import {
+  ListUsersFilterInterface,
+  UserInterface,
+} from 'src/interfaces/user.interface';
 
 @Injectable()
 export class UserService {
@@ -12,6 +16,20 @@ export class UserService {
     private jwtService: JwtService,
     private s3ManagerService: S3ManagerService,
   ) {}
+
+  public async createUser(user: UserInterface) {
+    const saltOrRounds = 10;
+    const hashedPassword = await bcrypt.hash(user.password, saltOrRounds);
+
+    return await this.prismaService.user.create({
+      data: {
+        ...user,
+        accessLevel: 'member',
+        status: 'waiting',
+        password: hashedPassword,
+      },
+    });
+  }
 
   public async auth(loginData: { email: string; password: string }) {
     const user = await this.prismaService.user.findFirstOrThrow({
@@ -73,6 +91,22 @@ export class UserService {
 
     return {
       message: 'Foto de perfil atualizada com sucesso',
+    };
+  }
+
+  public async listUsers(filter: ListUsersFilterInterface) {
+    const fieldsToBring = {};
+
+    filter.fieldsToReturn.forEach((field) => {
+      fieldsToBring[field] = true;
+    });
+
+    return {
+      message: 'Usuários listados com sucesso',
+      data: await this.prismaService.user.findMany({
+        select: { ...fieldsToBring },
+        where: { createdAt: { gt: new Date() } },
+      }),
     };
   }
 }

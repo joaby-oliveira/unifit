@@ -12,6 +12,9 @@ model User {
   email          String  @unique
   password       String
   accessLevel    String
+  name           String
+  status         String
+  ra             String  @unique
   profilePicture String?
 
   createdAt DateTime @default(now())
