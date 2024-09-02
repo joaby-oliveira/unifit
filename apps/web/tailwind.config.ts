@@ -1,11 +1,15 @@
-// tailwind config is required for editor support
+// tailwind.config.js
+const { nextui } = require("@nextui-org/react");
 
-import type { Config } from "tailwindcss";
-import sharedConfig from "@repo/tailwind-config";
-
-const config: Pick<Config, "content" | "presets"> = {
-  content: ["./src/app/**/*.tsx"],
-  presets: [sharedConfig],
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./src/app/**/*.tsx",
+    "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  darkMode: "class",
+  plugins: [nextui()],
 };
-
-export default config;
