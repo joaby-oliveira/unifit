@@ -101,7 +101,6 @@ export class UserService {
       fieldsToBring[field] = true;
     });
 
-    console.log(fieldsToBring);
     return {
       message: 'Usuários listados com sucesso',
       data: await this.prismaService.user.findMany({
