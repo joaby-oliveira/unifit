@@ -13,6 +13,7 @@ coverage
 out/
 build
 .swc/
+dist/
 
 # misc
 .DS_Store
