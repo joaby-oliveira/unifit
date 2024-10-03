@@ -23,6 +23,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { toast } from "sonner"
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const authFormSchema = z.object({
   email: z
@@ -36,18 +39,24 @@ const authFormSchema = z.object({
 type LoginForm = z.infer<typeof authFormSchema>;
 
 export default function AuthPage() {
+  const router = useRouter();
+
   const form = useForm<LoginForm>({
     resolver: zodResolver(authFormSchema),
   });
 
   async function onSubmit(values: LoginForm) {
-    await fetch("http://localhost:3001/auth", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ ...values }),
-    });
+    try {
+      const { data } = await axios.post("http://localhost:3001/user/auth", values);
+      
+      localStorage.setItem("accessToken", data.access_token);
+
+      router.push("/app");
+
+      toast(data.message);
+    } catch(err: any) {
+      toast.error(err.response.data.message)
+    }
   }
 
   return (

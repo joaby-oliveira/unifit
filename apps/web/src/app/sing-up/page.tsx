@@ -19,17 +19,21 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import Link from "next/link";
+import { useRouter } from 'next/navigation';
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const singUpFormSchema = z
   .object({
     name: z.string({ message: "Campo obrigatório" }).min(4),
-    ra: z.coerce.number({ message: "Campo obrigatório" }).min(1),
+    ra: z.string({ message: "Campo obrigatório" }).min(1),
     email: z
       .string({ message: "Campo obrigatório" })
       .email("Informe um email válido"),
+    cellphoneNumber: z.string(),
     password: z
       .string({ message: "Campo obrigatório" })
       .min(8, "Informe a quantidade minima de caracteres"),
@@ -48,18 +52,29 @@ const singUpFormSchema = z
 type SingUpForm = z.infer<typeof singUpFormSchema>;
 
 export default function AuthPage() {
+  const router = useRouter();
+
   const form = useForm<SingUpForm>({
     resolver: zodResolver(singUpFormSchema),
   });
 
   async function onSubmit(values: SingUpForm) {
-    await fetch("http://localhost:3001/user", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ ...values }),
-    });
+    try {
+      await axios.post("http://localhost:3001/user", {
+        name: values.name,
+        email: values.email,
+        ra: values.ra,
+        cellphoneNumber: values.cellphoneNumber,
+        password: values.password,
+      });
+
+      toast.error("Conta criada com sucesso");
+
+      router.push("/auth");
+
+    } catch(err: any) {
+      toast.error(err.response.data.message)
+    }
   }
 
   return (
@@ -112,6 +127,20 @@ export default function AuthPage() {
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input id="email" type="email" required {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="cellphoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Telefone</FormLabel>
+                    <FormControl>
+                      <Input id="cellphoneNumber" type="number" required {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
