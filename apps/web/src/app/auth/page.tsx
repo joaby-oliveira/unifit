@@ -128,7 +128,7 @@ export default function AuthPage() {
             Entrar
           </Button>
           <Link
-            href="/sing-up"
+            href="/sign-up"
             className="w-full text-center inline-block text-sm underline text-black"
           >
             Não possui conta? clique aqui!
