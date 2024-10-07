@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Toaster } from "@/components/ui/sonner"
 import "./globals.css";
+import '@/lib/dayjs';
 
 export const metadata: Metadata = {
   title: "Unifit",
