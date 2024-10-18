@@ -43,6 +43,10 @@ export default function UsersPage() {
     getUsers();
   }, [token]);
 
+  const handleUpdate = () => {
+    router.refresh();
+  }
+
   return (
     <main className="h-screen w-screen flex flex-col items-center p-2">
       <header className="w-full h-10"></header>
@@ -51,7 +55,7 @@ export default function UsersPage() {
         <h1 className="font-bold text-xl">Alunos Cadastrados:</h1>
         <UsersList caption="Administradores" users={admins}/>
         <UsersList caption="Alunos" users={commonMembers}/>
-        <Button className="w-full">Atualizar</Button>
+        <Button className="w-full" onClick={handleUpdate}>Atualizar</Button>
       </div>
     </main>
   );
