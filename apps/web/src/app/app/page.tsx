@@ -5,6 +5,7 @@ import useAuthStore from "@/stores/auth-store";
 import axios from "axios";
 import { SummaryTable } from "./_components/summary-table";
 import { useQueryClient } from "@tanstack/react-query";
+import { Header } from "./_components/header";
 
 export default function Page(): JSX.Element {
   const { getToken } = useAuthStore();
@@ -33,8 +34,8 @@ export default function Page(): JSX.Element {
   }
 
   return (
-    <main className="h-screen w-screen flex flex-col items-center p-2">
-      <header className="w-full h-10"></header>
+    <main className="h-screen w-screen flex flex-col items-center p-2 gap-4">
+      <Header />
 
       <div className="w-full h-full gap-2">
         <SummaryTable />
