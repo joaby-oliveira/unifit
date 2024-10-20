@@ -5,11 +5,19 @@ interface AuthStore {
     isLoggedIn: boolean;
     login: () => void;
     logout: () => void;
+    getToken: () => string | null;
 }
 const useAuthStore = create(
     persist<AuthStore>(
         (set) => ({
             isLoggedIn: false,
+            getToken: () => {
+                const userLocalStorage = localStorage.getItem('accessToken');
+                if (userLocalStorage) {
+                    return userLocalStorage
+                }
+                return null
+            },
             login: () => {
                 const userLocalStorage = localStorage.getItem('accessToken');
                 if (userLocalStorage) {
