@@ -26,6 +26,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import useAuthStore from "@/stores/auth-store";
 
 const authFormSchema = z.object({
   email: z
@@ -40,6 +41,7 @@ type LoginForm = z.infer<typeof authFormSchema>;
 
 export default function AuthPage() {
   const router = useRouter();
+  const { login } = useAuthStore();
 
   const form = useForm<LoginForm>({
     resolver: zodResolver(authFormSchema),
@@ -53,6 +55,8 @@ export default function AuthPage() {
       );
 
       localStorage.setItem("accessToken", data.data.access_token);
+
+      login();
 
       router.push("/app");
 
