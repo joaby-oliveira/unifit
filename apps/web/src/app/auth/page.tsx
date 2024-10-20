@@ -23,7 +23,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { toast } from "sonner"
+import { toast } from "sonner";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
@@ -47,15 +47,18 @@ export default function AuthPage() {
 
   async function onSubmit(values: LoginForm) {
     try {
-      const { data } = await axios.post("http://localhost:3001/user/auth", values);
-      
-      localStorage.setItem("accessToken", data.access_token);
+      const { data } = await axios.post(
+        "http://localhost:3001/user/auth",
+        values
+      );
+
+      localStorage.setItem("accessToken", data.data.access_token);
 
       router.push("/app");
 
       toast(data.message);
-    } catch(err: any) {
-      toast.error(err.response.data.message)
+    } catch (err: any) {
+      toast.error(err.response.data.message);
     }
   }
 
