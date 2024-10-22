@@ -1,5 +1,3 @@
-// Lembrar de tipar [Linha 31:35]
-
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -10,13 +8,17 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import useAuthStore from "@/stores/auth-store";
 
+interface User {
+  prop: string;  // Define the properties of User as needed
+  accessLevel: string;  // Ensure accessLevel is part of User
+}
 
 export default function UsersPage() {
   const { getToken } = useAuthStore();
   const router = useRouter();
   const token = getToken();
-  const [commonMembers, setCommonMembers] = useState([]);
-  const [admins, setAdmins] = useState([]);
+  const [commonMembers, setCommonMembers] = useState<User[]>([]);
+  const [admins, setAdmins] = useState<User[]>([]);
 
   useEffect(() => {
     const getUsers = async () => {
@@ -25,7 +27,7 @@ export default function UsersPage() {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const users = response.data.data;
+        const users: User[] = response.data.data;
 
         if (response.status !== 200) return;
 
@@ -48,7 +50,7 @@ export default function UsersPage() {
 
   const handleUpdate = () => {
     router.refresh();
-    toast.error("Lista de usuários atualizada")
+    toast.error("Lista de usuários atualizada");
   };
 
   return (
@@ -59,14 +61,10 @@ export default function UsersPage() {
         <h1 className="font-bold text-xl">Lista de usuários</h1>
         {admins.length !== 0 ? (
           <UsersList caption="Administradores" users={admins} />
-        ) : (
-          <></>
-        )}
+        ) : null}
         {commonMembers.length !== 0 ? (
           <UsersList caption="Alunos" users={commonMembers} />
-        ) : (
-          <></>
-        )}
+        ) : null}
         <Button className="w-full" onClick={handleUpdate}>
           Atualizar
         </Button>
