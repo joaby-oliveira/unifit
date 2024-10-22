@@ -9,8 +9,8 @@ import { useEffect, useState } from "react";
 import useAuthStore from "@/stores/auth-store";
 
 interface User {
-  prop: string;  // Define the properties of User as needed
-  accessLevel: string;  // Ensure accessLevel is part of User
+  prop: string;  
+  accessLevel: string;
 }
 
 export default function UsersPage() {
