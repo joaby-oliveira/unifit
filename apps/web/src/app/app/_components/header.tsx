@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,31 +7,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import useAuthStore from "@/stores/auth-store";
-import { useRouter } from "next/navigation";
-import { User, Flame, Dumbbell } from "lucide-react";
+import useUserStore from "@/stores/user-store";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { Dumbbell, Flame, User } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-interface User {
-  id: number
-  email: string
-  accessLevel: string
-  name: string
-  status: string
-  ra: string
-  cellphoneNumber: string
-  profilePicture: any
-  createdAt: string
-  updatedAt: string
-}
-
-
-async function getUserInfo(token: string): Promise<User> {
-  const { data } = await axios.get("http://localhost:3001/user/6", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+async function getStreakUser(token: string, userId: number): Promise<any> {
+  const { data } = await axios.get(
+    `http://localhost:3001/checkin/streak/${userId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
   return data;
 }
@@ -39,6 +29,7 @@ async function getUserInfo(token: string): Promise<User> {
 export function Header() {
   const router = useRouter();
   const { logout, getToken } = useAuthStore();
+  const { user } = useUserStore();
   const token = getToken();
 
   function logoutUser() {
@@ -46,9 +37,9 @@ export function Header() {
     router.push("/auth");
   }
 
-  const { data } = useQuery({
-    queryKey: ["get-user-info"],
-    queryFn: () => getUserInfo(token!),
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["get-streak-user"],
+    queryFn: () => getStreakUser(token!, user!.id),
   });
 
   return (
@@ -57,7 +48,7 @@ export function Header() {
 
       <div className="flex items-center gap-2">
         <div className="flex items-center justify-center gap-1 font-bold">
-          0
+          {!isLoading && !isError ? data?.data : ""}
           <Flame />
         </div>
         <DropdownMenu>
@@ -69,7 +60,7 @@ export function Header() {
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuLabel>{data?.ra}</DropdownMenuLabel>
+            <DropdownMenuLabel>{user?.ra}</DropdownMenuLabel>
             <DropdownMenuItem className="text-red-700" onClick={logoutUser}>
               Sair
             </DropdownMenuItem>

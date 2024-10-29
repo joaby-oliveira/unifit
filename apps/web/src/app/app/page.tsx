@@ -1,49 +1,61 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import useAuthStore from "@/stores/auth-store";
-import axios from "axios";
-import { SummaryTable } from "./_components/summary-table";
-import { useQueryClient } from "@tanstack/react-query";
+import { CheckInButton } from "./_components/check-in-button";
 import { Header } from "./_components/header";
+import { SummaryTable } from "./_components/summary-table";
+import { useQuery } from "@tanstack/react-query";
+import { UserInterface } from "@/types/user";
+import axios from "axios";
+import { useEffect } from "react";
+import useUserStore from "@/stores/user-store";
+import { decode } from "jsonwebtoken";
+
+export interface JwtPayload {
+  sub: number;
+  email: string;
+  accessLevel: string;
+  iat: number;
+}
+
+async function getUserInfo(token: string): Promise<UserInterface> {
+  const jwtDecoded = decode(token) as JwtPayload | null;
+
+  const { data } = await axios.get(
+    `http://localhost:3001/user/${jwtDecoded?.sub}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return data;
+}
 
 export default function Page(): JSX.Element {
   const { getToken } = useAuthStore();
-  const queryClient = useQueryClient();
+  const { setUser } = useUserStore();
+  const token = getToken();
 
-  async function checkInDay() {
-    const token = getToken();
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["get-user-info"],
+    queryFn: () => getUserInfo(token!),
+  });
 
-    try {
-      await axios.post(
-        "http://localhost:3001/checkin",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      queryClient.invalidateQueries({
-        queryKey: ["get-summary"],
-      });
-    } catch (error) {
-      console.log("Erro ao fazer check-in:", error);
+  useEffect(() => {
+    if (!isLoading && !isError) {
+      setUser(data!);
     }
-  }
+  }, [data]);
 
   return (
     <main className="h-screen w-screen flex flex-col items-center p-2 gap-4">
       <Header />
-
       <div className="w-full h-full gap-2">
         <SummaryTable />
       </div>
-
-      <Button onClick={checkInDay} className="w-full" size="lg">
-        Fazer check-in
-      </Button>
+      <CheckInButton />
     </main>
   );
 }

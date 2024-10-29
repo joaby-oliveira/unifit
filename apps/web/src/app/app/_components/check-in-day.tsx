@@ -7,7 +7,6 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import dayjs from "dayjs";
-import { useState } from "react";
 import "@/lib/dayjs";
 
 export function CheckInDay({
@@ -32,9 +31,9 @@ export function CheckInDay({
         )}
       />
 
-      <PopoverContent>
-        <span className="">{dayOfWeek}</span>
-        <span className="">{dayAndMonth}</span>
+      <PopoverContent className="flex flex-col gap-2 max-w-48">
+        <span className="capitalize font-bold">{dayOfWeek}</span>
+        <span className="text-sm text-zinc-400">{dayAndMonth}</span>
       </PopoverContent>
     </Popover>
   );

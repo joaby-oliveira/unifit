@@ -13,7 +13,7 @@ export default function AppLayout({
   const router = useRouter();
   const { isLoggedIn } = useAuthStore();
 
-  if (!isLoggedIn) router.push("/auth")
+  if (!isLoggedIn) router.push("/auth");
 
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
