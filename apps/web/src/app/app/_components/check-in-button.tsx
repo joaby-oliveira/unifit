@@ -1,25 +1,13 @@
 import { Button } from "@/components/ui/button";
-import useAuthStore from "@/stores/auth-store";
+import api from "@/lib/api";
 import { useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 
 export function CheckInButton() {
-  const { getToken } = useAuthStore();
   const queryClient = useQueryClient();
 
   async function checkInDay() {
-    const token = getToken();
-
     try {
-      await axios.post(
-        "http://localhost:3001/checkin",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await api.post("/checkin");
 
       queryClient.invalidateQueries({
         queryKey: ["get-summary"],

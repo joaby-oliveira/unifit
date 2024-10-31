@@ -19,14 +19,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { toast } from "sonner";
-import axios from "axios";
-import { useRouter } from "next/navigation";
+import api from "@/lib/api";
 import useAuthStore from "@/stores/auth-store";
+import { JwtPayload } from "@/types/jwt";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { decode } from "jsonwebtoken";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 const authFormSchema = z.object({
   email: z
@@ -49,16 +51,17 @@ export default function AuthPage() {
 
   async function onSubmit(values: LoginForm) {
     try {
-      const { data } = await axios.post(
-        "http://localhost:3001/user/auth",
-        values
-      );
+      const { data } = await api.post("/user/auth", values);
 
       localStorage.setItem("accessToken", data.data.access_token);
 
+      const jwtDecoded = decode(data.data.access_token) as JwtPayload | null;
+
       login();
 
-      router.push("/app");
+      let routePush = jwtDecoded?.role === "USER" ? "/app" : "/adm";
+
+      router.push(routePush);
 
       toast(data.message);
     } catch (err: any) {

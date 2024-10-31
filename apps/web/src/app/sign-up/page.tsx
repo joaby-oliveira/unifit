@@ -18,10 +18,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import api from "@/lib/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import Link from "next/link";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -60,7 +61,7 @@ export default function AuthPage() {
 
   async function onSubmit(values: SingUpForm) {
     try {
-      await axios.post("http://localhost:3001/user", {
+      await api.post("/user", {
         name: values.name,
         email: values.email,
         ra: values.ra,
@@ -68,12 +69,12 @@ export default function AuthPage() {
         password: values.password,
       });
 
-      toast.error("Conta criada com sucesso");
+      toast.success("Conta criada com sucesso");
 
       router.push("/auth");
-
-    } catch(err: any) {
-      toast.error(err.response.data.message)
+    } catch (err: any) {
+      console.log("AAAAAAAAAAAAAA", err);
+      toast.error(err.response.data.message);
     }
   }
 
@@ -140,7 +141,12 @@ export default function AuthPage() {
                   <FormItem>
                     <FormLabel>Telefone</FormLabel>
                     <FormControl>
-                      <Input id="cellphoneNumber" type="number" required {...field} />
+                      <Input
+                        id="cellphoneNumber"
+                        type="number"
+                        required
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

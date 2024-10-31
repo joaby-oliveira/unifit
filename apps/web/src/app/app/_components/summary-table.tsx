@@ -6,6 +6,7 @@ import { CheckInDay } from "./check-in-day";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import useAuthStore from "@/stores/auth-store";
+import api from "@/lib/api";
 
 const summaryDates = generateDatesFromMonthBeginning();
 
@@ -19,22 +20,15 @@ interface CheckIn {
   updatedAt: string;
 }
 
-async function getSummary(token: string): Promise<CheckIn[]> {
-  const { data } = await axios.get("http://localhost:3001/checkin", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+async function getSummary(): Promise<CheckIn[]> {
+  const { data } = await api.get("/checkin");
   return data.data;
 }
 
 export function SummaryTable() {
-  const { getToken } = useAuthStore();
-  const token = getToken();
-
   const { data, isLoading, isError } = useQuery({
     queryKey: ["get-summary"],
-    queryFn: () => getSummary(token!),
+    queryFn: () => getSummary(),
   });
 
   if (isLoading) return null;

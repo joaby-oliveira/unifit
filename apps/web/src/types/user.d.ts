@@ -9,4 +9,5 @@ export interface UserInterface {
     profilePicture: any
     createdAt: string
     updatedAt: string
+    role: "USER" | "ADMIN"
   }

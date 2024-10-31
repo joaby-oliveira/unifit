@@ -1,8 +1,11 @@
+import { JwtPayload } from '@/types/jwt';
+import { decode } from 'jsonwebtoken';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface AuthStore {
     isLoggedIn: boolean;
+    typeUser: "USER" | "ADMIN" | null
     login: () => void;
     logout: () => void;
     getToken: () => string | null;
@@ -11,6 +14,7 @@ const useAuthStore = create(
     persist<AuthStore>(
         (set) => ({
             isLoggedIn: false,
+            typeUser: null,
             getToken: () => {
                 const userLocalStorage = localStorage.getItem('accessToken');
                 if (userLocalStorage) {
@@ -21,7 +25,9 @@ const useAuthStore = create(
             login: () => {
                 const userLocalStorage = localStorage.getItem('accessToken');
                 if (userLocalStorage) {
-                    set({ isLoggedIn: true });
+                    const jwtDecoded = decode(userLocalStorage) as JwtPayload | null;
+
+                    set({ isLoggedIn: true, typeUser: jwtDecoded!.role });
                 }
             },
             logout: () => {

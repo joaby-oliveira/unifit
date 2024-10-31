@@ -1,35 +1,19 @@
 "use client";
 
+import api from "@/lib/api";
 import useAuthStore from "@/stores/auth-store";
+import useUserStore from "@/stores/user-store";
+import { JwtPayload } from "@/types/jwt";
+import { UserInterface } from "@/types/user";
+import { useQuery } from "@tanstack/react-query";
+import { decode } from "jsonwebtoken";
+import { useEffect } from "react";
 import { CheckInButton } from "./_components/check-in-button";
 import { Header } from "./_components/header";
 import { SummaryTable } from "./_components/summary-table";
-import { useQuery } from "@tanstack/react-query";
-import { UserInterface } from "@/types/user";
-import axios from "axios";
-import { useEffect } from "react";
-import useUserStore from "@/stores/user-store";
-import { decode } from "jsonwebtoken";
 
-export interface JwtPayload {
-  sub: number;
-  email: string;
-  accessLevel: string;
-  iat: number;
-}
-
-async function getUserInfo(token: string): Promise<UserInterface> {
-  const jwtDecoded = decode(token) as JwtPayload | null;
-
-  const { data } = await axios.get(
-    `http://localhost:3001/user/${jwtDecoded?.sub}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-
+async function getUserInfo(id: number): Promise<UserInterface> {
+  const { data } = await api.get(`/user/${id}`);
   return data;
 }
 
@@ -37,10 +21,11 @@ export default function Page(): JSX.Element {
   const { getToken } = useAuthStore();
   const { setUser } = useUserStore();
   const token = getToken();
+  const jwtDecoded = decode(token!) as JwtPayload | null;
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["get-user-info"],
-    queryFn: () => getUserInfo(token!),
+    queryFn: () => getUserInfo(jwtDecoded!.sub),
   });
 
   useEffect(() => {
