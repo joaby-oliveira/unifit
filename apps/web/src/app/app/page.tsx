@@ -19,7 +19,7 @@ async function getUserInfo(id: number): Promise<UserInterface> {
 
 export default function Page(): JSX.Element {
   const { getToken } = useAuthStore();
-  const { setUser } = useUserStore();
+  const { setUser, user } = useUserStore();
   const token = getToken();
   const jwtDecoded = decode(token!) as JwtPayload | null;
 
@@ -37,10 +37,19 @@ export default function Page(): JSX.Element {
   return (
     <main className="h-screen w-screen flex flex-col items-center p-2 gap-4">
       <Header />
-      <div className="w-full h-full gap-2">
-        <SummaryTable />
-      </div>
-      <CheckInButton />
+      {user?.status === "waiting" ? (
+        <div className="w-full h-full flex flex-col items-center">
+          <span className="text-xl font-bold text-zinc-800">Você esta na lista de espera 😭</span>
+          <span className="text-zinc-700">Aguarde ser aprovado! </span>
+        </div>
+      ) : (
+        <>
+          <div className="w-full h-full gap-2">
+            <SummaryTable />
+          </div>
+          <CheckInButton />
+        </>
+      )}
     </main>
   );
 }
