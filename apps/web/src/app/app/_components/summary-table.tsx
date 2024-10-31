@@ -1,12 +1,10 @@
 "use client";
 
+import api from "@/lib/api";
 import { generateDatesFromMonthBeginning } from "@/utils/generate-dates-from-month";
+import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { CheckInDay } from "./check-in-day";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import useAuthStore from "@/stores/auth-store";
-import api from "@/lib/api";
 
 const summaryDates = generateDatesFromMonthBeginning();
 
