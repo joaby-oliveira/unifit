@@ -1,15 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import UsersList from "./_components/users-list";
 import axios from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import useAuthStore from "@/stores/auth-store";
-
+import { UsersList } from "./_components/users-list"
 interface User {
-  prop: string;  
+  prop: string;
   accessLevel: string;
 }
 
@@ -17,8 +16,7 @@ export default function UsersPage() {
   const { getToken } = useAuthStore();
   const router = useRouter();
   const token = getToken();
-  const [commonMembers, setCommonMembers] = useState<User[]>([]);
-  const [admins, setAdmins] = useState<User[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
     const getUsers = async () => {
@@ -32,14 +30,7 @@ export default function UsersPage() {
         if (response.status !== 200) return;
 
         users.forEach((user) => {
-          if (user.accessLevel === "member") {
-            setCommonMembers((prevCommonMembers) => [
-              ...prevCommonMembers,
-              user,
-            ]);
-          } else if (user.accessLevel === "admin") {
-            setAdmins((prevAdmins) => [...prevAdmins, user]);
-          }
+          setUsers((prevUsers) => [...prevUsers, user]);
         });
       } catch (error) {
         console.log("Ocorreu um erro:", error);
@@ -58,14 +49,8 @@ export default function UsersPage() {
       <header className="w-full h-10"></header>
 
       <div className="w-full h-full ">
-        <h1 className="font-bold text-xl">Lista de usuários</h1>
-        {admins.length !== 0 ? (
-          <UsersList caption="Administradores" users={admins} />
-        ) : null}
-        {commonMembers.length !== 0 ? (
-          <UsersList caption="Alunos" users={commonMembers} />
-        ) : null}
-        <Button className="w-full" onClick={handleUpdate}>
+        <UsersList users={users}></UsersList>
+        <Button className="w-full my-4" onClick={handleUpdate}>
           Atualizar
         </Button>
       </div>
