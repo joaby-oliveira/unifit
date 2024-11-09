@@ -39,13 +39,17 @@ export default function Page(): JSX.Element {
       <Header />
       {user?.status === "waiting" ? (
         <div className="w-full h-full flex flex-col items-center">
-          <span className="text-xl font-bold text-zinc-800">Você esta na lista de espera 😭</span>
+          <span className="text-xl font-bold text-zinc-800">
+            Você esta na lista de espera 😭
+          </span>
           <span className="text-zinc-700">Aguarde ser aprovado! </span>
         </div>
       ) : (
         <>
-          <div className="w-full h-full gap-2">
-            <SummaryTable />
+          <div className="w-full h-full flex justify-center">
+            <div>
+              <SummaryTable />
+            </div>
           </div>
           <CheckInButton />
         </>
