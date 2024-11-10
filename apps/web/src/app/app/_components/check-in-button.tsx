@@ -18,31 +18,53 @@ import { toast } from "sonner";
 
 export function CheckInButton() {
   const queryClient = useQueryClient();
-  const [result, setResult] = useState("");
+  const [checkinId, setCheckinId] = useState<number>();
+  const [checkinValid, setCheckinValid] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  async function checkInDay() {
+  async function validateQrCode(value: string) {
     try {
-      if (!result) {
-        toast.error("Leia o QR Code para fazer o check-in");
+      const { data } = await api.post(
+        "/checkin/confirm",
+        {},
+        {
+          params: {
+            encodedQrCode: value,
+            checkInId: checkinId,
+          },
+        }
+      );
+
+      const checkinIsValid = data.data;
+
+      if (!checkinIsValid) {
+        toast.error("Erro ao validar o QrCode, tente novamente!", { dismissible: true, position: "top-center" });
         return;
       }
 
-      await api.post("/checkin", { result });
+      setCheckinValid(checkinIsValid);
 
       queryClient.invalidateQueries({
         queryKey: ["get-summary"],
       });
+
+      setIsOpen(false);
     } catch (error) {
       console.log(error);
     }
   }
 
-  async function validateQrCode(value: string) {
-    console.log(value)
+  async function initCheckIn() {
+    setIsOpen((state) => !state);
+    
+    if (!isOpen) {
+      const checkin = await api.post("/checkin");
+      setCheckinId(checkin.data.data.id);
+    }
   }
 
   return (
-    <Drawer>
+    <Drawer open={isOpen} onOpenChange={initCheckIn}>
       <DrawerTrigger asChild>
         <Button className="w-full" size="lg">
           Fazer check-in
@@ -53,9 +75,11 @@ export function CheckInButton() {
           <DrawerTitle>Leia o QrCode</DrawerTitle>
           <DrawerDescription>Para completar o seu check-in</DrawerDescription>
         </DrawerHeader>
-        {!result ? (
+
+        {!checkinValid ? (
           <Scanner
-            scanDelay={0}
+            allowMultiple={true}
+            scanDelay={2000}
             onError={() => toast.error("Erro ao ler o QRCode")}
             onScan={(result) => validateQrCode(result[0].rawValue)}
           />
@@ -69,9 +93,8 @@ export function CheckInButton() {
         )}
 
         <DrawerFooter>
-          <Button onClick={checkInDay}>Enviar</Button>
           <DrawerClose>
-            <Button className="w-full" variant="outline">
+            <Button className="w-full" variant="destructive">
               Cancelar
             </Button>
           </DrawerClose>

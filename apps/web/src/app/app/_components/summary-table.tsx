@@ -14,6 +14,7 @@ const amountOfDaysToFill = minimumSummaryDatesSize - summaryDates.length;
 interface CheckIn {
   id: number;
   id_user: number;
+  confirmed: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -37,7 +38,7 @@ export function SummaryTable() {
       <div className="grid grid-rows-7 grid-flow-col gap-2 ">
         {summaryDates.map((date) => {
           const dayIsChecked = data!.some((checkin) => {
-            return dayjs(checkin.createdAt).isSame(dayjs(date), "day");
+            return dayjs(checkin.createdAt).isSame(dayjs(date), "day") && checkin.confirmed;
           });
 
           return (
