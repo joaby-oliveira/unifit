@@ -35,7 +35,7 @@ export function CheckInButton() {
         }
       );
 
-      const checkinIsValid = data.data;
+      const checkinIsValid = data;
 
       if (!checkinIsValid) {
         toast.error("Erro ao validar o QrCode, tente novamente!", { dismissible: true, position: "top-center" });
