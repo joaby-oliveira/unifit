@@ -13,7 +13,7 @@ import api from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
-import { UsersList } from "./_components/users-list";
+import { UsersList } from "../_components/users-list";
 import { useState } from "react";
 
 type UserStatus = User["status"];

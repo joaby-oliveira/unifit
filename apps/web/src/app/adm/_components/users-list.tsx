@@ -23,7 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { UserInfo } from "./user-info";
-import { UpdateUserStatus } from "./user-status-update";
+import { UpdateUserStatus } from "../users/_components/user-status-update";
 import { DeleteUser } from "./user-delete";
 
 export type Props = Pick<User, "id" | "ra" | "name">;
@@ -108,7 +108,7 @@ export function UsersList(props: { users: User[] }) {
                   <TableCell>
                     <div className="flex gap-1">
                       <UserInfo user={user} />
-                      <UpdateUserStatus user={user} />
+                      {user.role === "USER" && <UpdateUserStatus user={user} />}
                       <DeleteUser user={user} />
                     </div>
                   </TableCell>
