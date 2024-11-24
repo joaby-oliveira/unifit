@@ -9,7 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { decode } from "jsonwebtoken";
 import { useEffect } from "react";
 import { CheckInButton } from "./_components/check-in-button";
-import { Header } from "./_components/header";
+import { Header } from "../../components/header";
 import { SummaryTable } from "./_components/summary-table";
 
 async function getUserInfo(id: number): Promise<UserInterface> {
