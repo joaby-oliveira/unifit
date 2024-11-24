@@ -6,6 +6,7 @@ import { persist } from 'zustand/middleware';
 interface AuthStore {
     isLoggedIn: boolean;
     typeUser: "USER" | "ADMIN" | null
+    userId: number | null
     login: () => void;
     logout: () => void;
     getToken: () => string | null;
@@ -15,6 +16,7 @@ const useAuthStore = create(
         (set) => ({
             isLoggedIn: false,
             typeUser: null,
+            userId: null,
             getToken: () => {
                 const userLocalStorage = localStorage.getItem('accessToken');
                 if (userLocalStorage) {
@@ -27,7 +29,7 @@ const useAuthStore = create(
                 if (userLocalStorage) {
                     const jwtDecoded = decode(userLocalStorage) as JwtPayload | null;
 
-                    set({ isLoggedIn: true, typeUser: jwtDecoded!.role });
+                    set({ isLoggedIn: true, typeUser: jwtDecoded!.role, userId: jwtDecoded!.sub });
                 }
             },
             logout: () => {

@@ -13,19 +13,24 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import api from "@/lib/api";
 import useAuthStore from "@/stores/auth-store";
 import useUserStore from "@/stores/user-store";
+import { UserInterface } from "@/types/user";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { decode, JwtPayload } from "jsonwebtoken";
 import { Dumbbell, Flame, Home, Menu, User, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
-import api from "@/lib/api";
-import Link from "next/link";
-import { useState } from "react";
 
 async function getStreakUser(userId: number): Promise<any> {
   const { data } = await api.get(`checkin/streak/${userId}`);
+  return data;
+}
+
+async function getUserInfo(id: number): Promise<UserInterface> {
+  const { data } = await api.get(`/user/${id}`);
   return data;
 }
 
@@ -33,17 +38,38 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
   const { logout } = useAuthStore();
-  const { user } = useUserStore();
+  const { user, setUser } = useUserStore();
+  const { typeUser, userId } = useAuthStore();
+
+  const {
+    data: dataUser,
+    isLoading: isLoadingUser,
+    isError: isErrorUser,
+  } = useQuery({
+    queryKey: ["get-user-info"],
+    queryFn: () => getUserInfo(userId!),
+  });
+
+  const {
+    data: dataStreak,
+    isLoading: isLoadingStreak,
+    isError: isErrorStreak,
+  } = useQuery({
+    queryKey: ["get-streak-user", dataUser],
+    queryFn: () => getStreakUser(userId!),
+  });
+
+  useEffect(() => {
+    if (!isLoadingUser && !isErrorUser) {
+      setUser(dataUser!);
+      console.log(dataUser);
+    }
+  }, [dataUser]);
 
   function logoutUser() {
     logout();
     router.push("/auth");
   }
-
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["get-streak-user"],
-    queryFn: () => getStreakUser(user!.id),
-  });
 
   const navigateCallBack = (href: string) => {
     router.push(href);
@@ -55,12 +81,14 @@ export function Header() {
       <Dumbbell />
 
       <div className="flex items-center gap-2">
-        {user?.role === "USER" ? (
+        {typeUser === "USER" && (
           <div className="flex items-center justify-center gap-1 font-bold">
-            {!isLoading && !isError ? data?.data : ""}
+            {!isLoadingStreak && !isErrorStreak ? dataStreak?.data : ""}
             <Flame />
           </div>
-        ) : (
+        )}
+
+        {typeUser === "ADMIN" && (
           <Drawer open={menuOpen} onOpenChange={setMenuOpen}>
             <DrawerTrigger asChild>
               <Button size="icon" variant="default">
@@ -96,7 +124,7 @@ export function Header() {
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuLabel>{user?.ra}</DropdownMenuLabel>
+            <DropdownMenuLabel>{user?.name}</DropdownMenuLabel>
             <DropdownMenuItem className="text-red-700" onClick={logoutUser}>
               Sair
             </DropdownMenuItem>

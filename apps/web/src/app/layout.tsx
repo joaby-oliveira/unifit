@@ -8,6 +8,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/react-query";
 import { useRouter } from "next/navigation";
 import useAuthStore from "@/stores/auth-store";
+import { useEffect } from "react";
 
 export default function RootLayout({
   children,
@@ -15,7 +16,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const router = useRouter();
-  const { isLoggedIn, typeUser } = useAuthStore();
+  const { isLoggedIn, typeUser, login } = useAuthStore();
+
+  useEffect(() => {
+    login();
+  }, []);
 
   if (isLoggedIn && typeUser) {
     const routerPush = typeUser === "USER" ? "/app" : "/adm";
